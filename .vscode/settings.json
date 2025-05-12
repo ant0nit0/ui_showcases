@@ -1,0 +1,31 @@
+{
+    "editor.formatOnSave": true,
+    "dart.flutterSdkPath": ".fvm/flutter_sdk",
+    "dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
+    "[dart]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+        }
+    },
+    "actionButtons": {
+    "commands": [
+      {
+        "name": "pub get",
+        "singleInstance": true,
+        "command": "fvm flutter pub get"
+      },
+      {
+        "name": "build_runner watch",
+        "singleInstance": true,
+        "command": "fvm dart run build_runner watch --delete-conflicting-outputs"
+      },
+      {
+        "name": "slang",
+        "singleInstance": true,
+        "command": "fvm dart run slang"
+        }
+      ]
+    },
+    "java.configuration.updateBuildConfiguration": "disabled"
+}
