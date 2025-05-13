@@ -193,120 +193,126 @@ class _Cards extends StatelessWidget {
             ),
           ),
         ),
-        _makeMainCard(),
+        _makeMainCard(context),
       ],
     );
   }
 
-  Widget _makeMainCard() {
+  Widget _makeMainCard(BuildContext context) {
     const rioUrl =
         "https://a.cdn-hotels.com/gdcs/production90/d1313/e413c950-c31d-11e8-9739-0242ac110006.jpg";
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Stack(
-        children: [
-          Container(
-            width: double.infinity,
-            height: 400,
-            decoration: BoxDecoration(
-              image: const DecorationImage(
-                image: NetworkImage(rioUrl),
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.circular(24),
-            ),
-          ),
-          Positioned(
-            top: 16,
-            right: 16,
-            child: Container(
+      child: GestureDetector(
+        onTap: () => Navigator.pop(context),
+        child: Stack(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 400,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: .2),
-                borderRadius: BorderRadius.circular(100),
-              ),
-              padding: const EdgeInsets.all(14),
-              child: const Icon(Icons.favorite, size: 24, color: Colors.white),
-            ),
-          ),
-          Positioned(
-            bottom: 16,
-            top: 0,
-            left: 12,
-            right: 12,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Brazil',
-                    style: GoogleFonts.montserrat(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white)),
-                Text('Rio de Janeiro',
-                    style: GoogleFonts.montserrat(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white)),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 2),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.star,
-                                size: 14, color: Colors.white),
-                            const SizedBox(width: 2),
-                            Text('4.8',
-                                style: GoogleFonts.montserrat(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white)),
-                          ],
-                        )),
-                    const SizedBox(width: 8),
-                    Text('143 reviews',
-                        style: GoogleFonts.montserrat(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white.withValues(alpha: .75))),
-                  ],
+                image: const DecorationImage(
+                  image: NetworkImage(rioUrl),
+                  fit: BoxFit.cover,
                 ),
-                const SizedBox(height: 12),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: .5),
-                    borderRadius: const BorderRadius.all(Radius.circular(100)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+            Positioned(
+              top: 16,
+              right: 16,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .2),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                padding: const EdgeInsets.all(14),
+                child:
+                    const Icon(Icons.favorite, size: 24, color: Colors.white),
+              ),
+            ),
+            Positioned(
+              bottom: 16,
+              top: 0,
+              left: 12,
+              right: 12,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Brazil',
+                      style: GoogleFonts.montserrat(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white)),
+                  Text('Rio de Janeiro',
+                      style: GoogleFonts.montserrat(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white)),
+                  const SizedBox(height: 4),
+                  Row(
                     children: [
-                      const SizedBox(width: 30),
-                      Text('See more',
+                      Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 4, vertical: 2),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.star,
+                                  size: 14, color: Colors.white),
+                              const SizedBox(width: 2),
+                              Text('4.8',
+                                  style: GoogleFonts.montserrat(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white)),
+                            ],
+                          )),
+                      const SizedBox(width: 8),
+                      Text('143 reviews',
                           style: GoogleFonts.montserrat(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white)),
-                      Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          padding: const EdgeInsets.all(14),
-                          child: const Icon(Icons.arrow_forward_ios, size: 14)),
+                              color: Colors.white.withValues(alpha: .75))),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: .5),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(100)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const SizedBox(width: 30),
+                        Text('See more',
+                            style: GoogleFonts.montserrat(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white)),
+                        Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            padding: const EdgeInsets.all(14),
+                            child:
+                                const Icon(Icons.arrow_forward_ios, size: 14)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -327,7 +333,7 @@ class _BottomBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
             ),
@@ -335,10 +341,10 @@ class _BottomBar extends StatelessWidget {
             child: const Icon(Icons.house_outlined,
                 size: 24, color: Color(0xff212528)),
           ),
-          Icon(Icons.search, size: 24, color: Colors.white),
-          Icon(Icons.person_outline, size: 24, color: Colors.white),
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+          const Icon(Icons.search, size: 24, color: Colors.white),
+          const Icon(Icons.person_outline, size: 24, color: Colors.white),
+          const Padding(
+            padding: EdgeInsets.only(right: 8.0),
             child: Icon(Icons.favorite_border_rounded,
                 size: 24, color: Colors.white),
           ),

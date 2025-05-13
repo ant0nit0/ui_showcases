@@ -43,14 +43,17 @@ class HomeAppBar extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: .8),
-            shape: BoxShape.circle,
-          ),
-          padding: const EdgeInsets.all(12),
-          child: const Icon(
-            Icons.arrow_back,
+        GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: .8),
+              shape: BoxShape.circle,
+            ),
+            padding: const EdgeInsets.all(12),
+            child: const Icon(
+              Icons.arrow_back,
+            ),
           ),
         ),
         Text(
