@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ui_showcases/1_fitness.dart';
+import 'package:ui_showcases/2_travel.dart';
 
 void main() {
   runApp(const MainApp());
@@ -12,7 +12,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: FitnessAppHomeScreen(),
+      home: TravelAppHomeScreen(),
     );
   }
 }
