@@ -26,8 +26,8 @@ class KRoute {
 class Routes {
   static const home = KRoute.custom(name: 'home', path: '/');
 
-  static const travel = KRoute(name: 'travel');
   static const fitness = KRoute(name: 'fitness');
+  static const travel = KRoute(name: 'travel');
   static const tiktok = KRoute(name: 'tiktok');
 }
 
@@ -51,14 +51,14 @@ GoRouter generateRouter({
           builder: (context, state) => const HomePage(),
         ),
         GoRoute(
-          name: Routes.travel.name,
-          path: Routes.travel.path,
-          builder: (context, state) => const TravelAppHomeScreen(),
-        ),
-        GoRoute(
           name: Routes.fitness.name,
           path: Routes.fitness.path,
           builder: (context, state) => const FitnessAppHomeScreen(),
+        ),
+        GoRoute(
+          name: Routes.travel.name,
+          path: Routes.travel.path,
+          builder: (context, state) => const TravelAppHomeScreen(),
         ),
         GoRoute(
           name: Routes.tiktok.name,
