@@ -10,7 +10,7 @@ class AnimatedText extends StatefulWidget {
   const AnimatedText({
     super.key,
     required this.text,
-    this.speed = 1.0,
+    this.speed = 30.0,
     this.width = 300,
     this.textStyle,
   });
@@ -100,9 +100,9 @@ class _AnimatedTextState extends State<AnimatedText>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(widget.text),
+                  Text(widget.text, style: widget.textStyle),
                   const SizedBox(width: 30),
-                  Text(widget.text),
+                  Text(widget.text, style: widget.textStyle),
                 ],
               ),
             ),
