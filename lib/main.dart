@@ -45,6 +45,7 @@ class HomePage extends StatelessWidget {
               children: [
                 for (final page in availablePages.entries)
                   _makeButton(context, page.key, page.value),
+                const SizedBox(height: 40),
               ],
             ),
           ),
