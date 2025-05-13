@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ui_showcases/1_Fitness/fitness_app_home_screen.dart';
 import 'package:ui_showcases/2_Travel/travel_app_home_screen.dart.dart';
 import 'package:ui_showcases/3_Tiktok/tiktok_clone.dart';
+import 'package:ui_showcases/4_Ecology/ecology_app_launch_screen.dart';
 import 'package:ui_showcases/main.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) => generateRouter());
@@ -29,6 +30,7 @@ class Routes {
   static const fitness = KRoute(name: 'fitness');
   static const travel = KRoute(name: 'travel');
   static const tiktok = KRoute(name: 'tiktok');
+  static const ecology = KRoute(name: 'ecology');
 }
 
 GoRouter generateRouter({
@@ -64,6 +66,11 @@ GoRouter generateRouter({
           name: Routes.tiktok.name,
           path: Routes.tiktok.path,
           builder: (context, state) => const TiktokHomeClone(),
+        ),
+        GoRoute(
+          name: Routes.ecology.name,
+          path: Routes.ecology.path,
+          builder: (context, state) => const EcologyAppLaunchScreen(),
         ),
       ]);
 }

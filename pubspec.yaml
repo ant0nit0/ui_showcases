@@ -21,6 +21,7 @@ dependencies:
   http: ^1.3.0
   json_annotation: ^4.9.0
   riverpod_annotation: ^2.6.1
+  smooth_page_indicator: ^1.2.1
   video_player: ^2.9.5
 
 dev_dependencies:
@@ -42,5 +43,6 @@ flutter:
     - .env
     - assets/ 
     - assets/images/
+    - assets/images/ecology/
     - assets/icons/
     - assets/icons/tiktok/

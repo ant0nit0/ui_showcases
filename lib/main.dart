@@ -32,6 +32,7 @@ class HomePage extends StatelessWidget {
       '1. Fitness': Routes.fitness.name,
       '2. Travel': Routes.travel.name,
       '3. Tiktok': Routes.tiktok.name,
+      '4. Ecology': Routes.ecology.name,
     };
 
     return Scaffold(
