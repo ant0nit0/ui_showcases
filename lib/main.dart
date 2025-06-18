@@ -34,6 +34,7 @@ class HomePage extends StatelessWidget {
       '3. Tiktok': Routes.tiktok.name,
       '4. Ecology': Routes.ecology.name,
       '5. Shaders': Routes.shaders.name,
+      '6. Morphable Shapes': Routes.morphableShapes.name,
     };
 
     return Scaffold(

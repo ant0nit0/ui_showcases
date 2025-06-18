@@ -6,6 +6,7 @@ import 'package:ui_showcases/2_Travel/travel_app_home_screen.dart.dart';
 import 'package:ui_showcases/3_Tiktok/tiktok_clone.dart';
 import 'package:ui_showcases/4_Ecology/ecology_app_launch_screen.dart';
 import 'package:ui_showcases/5_Shaders/shaders_showcase_page.dart';
+import 'package:ui_showcases/6_MorphAnimations/morphable_shapes_screen.dart';
 import 'package:ui_showcases/main.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) => generateRouter());
@@ -33,6 +34,7 @@ class Routes {
   static const tiktok = KRoute(name: 'tiktok');
   static const ecology = KRoute(name: 'ecology');
   static const shaders = KRoute(name: 'shaders');
+  static const morphableShapes = KRoute(name: 'morphableShapes');
 }
 
 GoRouter generateRouter({
@@ -78,6 +80,11 @@ GoRouter generateRouter({
           name: Routes.shaders.name,
           path: Routes.shaders.path,
           builder: (context, state) => const ShadersShowcasePage(),
+        ),
+        GoRoute(
+          name: Routes.morphableShapes.name,
+          path: Routes.morphableShapes.path,
+          builder: (context, state) => const MorphableShapesShowcasePage(),
         ),
       ]);
 }
