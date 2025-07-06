@@ -7,6 +7,7 @@ import 'package:ui_showcases/3_Tiktok/tiktok_clone.dart';
 import 'package:ui_showcases/4_Ecology/ecology_app_launch_screen.dart';
 import 'package:ui_showcases/5_Shaders/shaders_showcase_page.dart';
 import 'package:ui_showcases/6_MorphAnimations/morphable_shapes_screen.dart';
+import 'package:ui_showcases/6_MorphAnimations/onboarding/onboarding_flower_controller_example.dart';
 import 'package:ui_showcases/main.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) => generateRouter());
@@ -35,6 +36,7 @@ class Routes {
   static const ecology = KRoute(name: 'ecology');
   static const shaders = KRoute(name: 'shaders');
   static const morphableShapes = KRoute(name: 'morphableShapes');
+  static const flowerController = KRoute(name: 'flowerController');
 }
 
 GoRouter generateRouter({
@@ -85,6 +87,12 @@ GoRouter generateRouter({
           name: Routes.morphableShapes.name,
           path: Routes.morphableShapes.path,
           builder: (context, state) => const MorphableShapesShowcasePage(),
+        ),
+        GoRoute(
+          name: Routes.flowerController.name,
+          path: Routes.flowerController.path,
+          builder: (context, state) =>
+              const OnboardingFlowerControllerExample(),
         ),
       ]);
 }
