@@ -8,6 +8,7 @@ import 'package:ui_showcases/4_Ecology/ecology_app_launch_screen.dart';
 import 'package:ui_showcases/5_Shaders/shaders_showcase_page.dart';
 import 'package:ui_showcases/6_MorphAnimations/morphable_shapes_screen.dart';
 import 'package:ui_showcases/6_MorphAnimations/onboarding/onboarding_flower_controller_example.dart';
+import 'package:ui_showcases/7_Book/book_screen.dart';
 import 'package:ui_showcases/main.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) => generateRouter());
@@ -37,6 +38,7 @@ class Routes {
   static const shaders = KRoute(name: 'shaders');
   static const morphableShapes = KRoute(name: 'morphableShapes');
   static const flowerController = KRoute(name: 'flowerController');
+  static const book = KRoute(name: 'book');
 }
 
 GoRouter generateRouter({
@@ -93,6 +95,11 @@ GoRouter generateRouter({
           path: Routes.flowerController.path,
           builder: (context, state) =>
               const OnboardingFlowerControllerExample(),
+        ),
+        GoRoute(
+          name: Routes.book.name,
+          path: Routes.book.path,
+          builder: (context, state) => const BookScreen(),
         ),
       ]);
 }
