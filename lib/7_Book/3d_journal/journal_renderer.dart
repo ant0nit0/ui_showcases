@@ -252,7 +252,7 @@ class RenderBook3D extends RenderBox
   }
 
   RenderBox? _childAt(int index) {
-    if (index < 0) return null;
+    if (index < 0) return firstChild;
     int i = 0;
     RenderBox? child = firstChild;
     while (child != null) {
@@ -842,7 +842,12 @@ class RenderBook3D extends RenderBox
         paintRotatedRight(paintShadows: false);
       }
     } else if (_swipeDirection == SwipeDirection.leftToRight) {
-      if (angle <= halfThreshold) {
+      if (leftStack.isEmpty) {
+        paintRotatedLeft(paintContent: false);
+        paintStaticRight();
+        paintRightStack();
+        paintRotatedLeft(paintShadows: false);
+      } else if (angle <= halfThreshold) {
         paintLeftStack();
         paintRotatedLeft(paintContent: false);
         paintRightStack();

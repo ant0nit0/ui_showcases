@@ -57,7 +57,7 @@ class SwipeableJournal extends HookWidget {
       if (dir == SwipeDirection.rightToLeft) {
         return currentPageIndex.value + 2 < pages.length;
       } else {
-        return currentPageIndex.value - 2 >= 0;
+        return currentPageIndex.value - 2 >= -2;
       }
     }
 
