@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:ui_showcases/7_Book/3d_journal/swipeable_journal.dart';
 
 /// Controller to programmatically control a journal widget.
@@ -7,19 +6,22 @@ import 'package:ui_showcases/7_Book/3d_journal/swipeable_journal.dart';
 /// If attached, you can call [nextPage] or [previousPage] to trigger
 /// the flip animation to the next/previous spread.
 class JournalController {
-  VoidCallback? _onNext;
-  VoidCallback? _onPrevious;
+  Future<bool> Function()? _onNext;
+  Future<bool> Function()? _onPrevious;
+  Future<bool> Function(int index)? _onAnimateTo;
   void Function(SwipeDirection direction, double progress)? _onUpdateProgress;
 
   /// Framework use only: binds the internal controls.
   /// Do not call this from outside; it is handled by the widget.
   void bindControls({
-    required VoidCallback onNext,
-    required VoidCallback onPrevious,
+    required Future<bool> Function() onNext,
+    required Future<bool> Function() onPrevious,
+    required Future<bool> Function(int index) onAnimateTo,
     void Function(SwipeDirection direction, double progress)? onUpdateProgress,
   }) {
     _onNext = onNext;
     _onPrevious = onPrevious;
+    _onAnimateTo = onAnimateTo;
     _onUpdateProgress = onUpdateProgress;
   }
 
@@ -27,29 +29,28 @@ class JournalController {
   void unbindControls() {
     _onNext = null;
     _onPrevious = null;
+    _onAnimateTo = null;
     _onUpdateProgress = null;
   }
 
   /// Tries to flip to the next spread.
   ///
-  /// Returns true if the action was dispatched (controller is attached
-  /// and the widget will attempt to animate), false otherwise.
-  bool nextPage() {
+  /// Returns true if the page was flipped, false otherwise.
+  Future<bool> nextPage() async {
     final cb = _onNext;
     if (cb == null) return false;
-    cb();
-    return true;
+    final result = await cb.call();
+    return result;
   }
 
   /// Tries to flip to the previous spread.
   ///
-  /// Returns true if the action was dispatched (controller is attached
-  /// and the widget will attempt to animate), false otherwise.
-  bool previousPage() {
+  /// Returns true if the page was flipped, false otherwise.
+  Future<bool> previousPage() async {
     final cb = _onPrevious;
     if (cb == null) return false;
-    cb();
-    return true;
+    final result = await cb.call();
+    return result;
   }
 
   /// Updates the swipe progress programmatically.
@@ -64,5 +65,15 @@ class JournalController {
     if (cb == null) return false;
     cb(direction, progress.clamp(0.0, 1.0));
     return true;
+  }
+
+  /// Animates to the given page index.
+  ///
+  /// Returns true if the animation has completed, false otherwise.
+  Future<bool> animateTo(int index) async {
+    final cb = _onAnimateTo;
+    if (cb == null) return false;
+    final result = await cb.call(index);
+    return result;
   }
 }

@@ -61,11 +61,11 @@ class SwipeableJournal extends HookWidget {
       }
     }
 
-    void startAnimation({
+    Future<void> startAnimation({
       required bool commit,
       required SwipeDirection direction,
       required double from,
-    }) {
+    }) async {
       animating.value = true;
       animationController.stop();
       animationController.value = from.clamp(0.0, 1.0);
@@ -75,16 +75,15 @@ class SwipeableJournal extends HookWidget {
               .clamp(0.0, 1.0);
       final int millis =
           (animationDuration.inMilliseconds * remaining).clamp(80, 450).toInt();
-      // Use easeOutCubic directly on animateTo/animateBack
 
       if (commit) {
-        animationController
+        await animationController
             .animateTo(
           1.0,
           duration: Duration(milliseconds: millis),
           curve: animationCurve,
         )
-            .whenComplete(() {
+            .whenComplete(() async {
           animating.value = false;
           swipeProgress.value = 0.0;
           final dir = swipeDirection.value ?? direction;
@@ -98,45 +97,47 @@ class SwipeableJournal extends HookWidget {
             currentPageIndex.value -= 2;
           }
           animationController.value = 0.0;
-          onPageChanged?.call(currentPageIndex.value);
+          await onPageChanged?.call(currentPageIndex.value);
         });
       } else {
-        animationController
+        await animationController
             .animateBack(
           0.0,
           duration: Duration(milliseconds: millis),
           curve: animationCurve,
         )
-            .whenComplete(() {
+            .whenComplete(() async {
           animating.value = false;
           swipeProgress.value = 0.0;
           swipeDirection.value = null;
           animationController.value = 0.0;
-          onPageChanged?.call(currentPageIndex.value);
+          await onPageChanged?.call(currentPageIndex.value);
         });
       }
     }
 
-    void goNext() {
-      if (animating.value) return;
-      if (!canSwipe(SwipeDirection.rightToLeft)) return;
+    Future<bool> goNext() async {
+      if (animating.value) return false;
+      if (!canSwipe(SwipeDirection.rightToLeft)) return false;
       swipeDirection.value = SwipeDirection.rightToLeft;
-      startAnimation(
+      await startAnimation(
         commit: true,
         direction: SwipeDirection.rightToLeft,
         from: 0.0,
       );
+      return true;
     }
 
-    void goPrevious() {
-      if (animating.value) return;
-      if (!canSwipe(SwipeDirection.leftToRight)) return;
+    Future<bool> goPrevious() async {
+      if (animating.value) return false;
+      if (!canSwipe(SwipeDirection.leftToRight)) return false;
       swipeDirection.value = SwipeDirection.leftToRight;
-      startAnimation(
+      await startAnimation(
         commit: true,
         direction: SwipeDirection.leftToRight,
         from: 0.0,
       );
+      return true;
     }
 
     void updateProgress(SwipeDirection direction, double progress) {
@@ -154,11 +155,30 @@ class SwipeableJournal extends HookWidget {
       swipeProgress.value = progress.clamp(0.0, 1.0);
     }
 
+    Future<bool> animateTo(int index) async {
+      if (animating.value) return false;
+      if (index < 0 || index >= pages.length) return false;
+
+      final i = index * 2;
+
+      final forward = i > currentPageIndex.value;
+      do {
+        if (forward) {
+          await goNext();
+        } else {
+          await goPrevious();
+        }
+      } while (currentPageIndex.value != i);
+
+      return true;
+    }
+
     useEffect(() {
       controller?.bindControls(
         onNext: goNext,
         onPrevious: goPrevious,
         onUpdateProgress: updateProgress,
+        onAnimateTo: animateTo,
       );
       return () {
         controller?.unbindControls();

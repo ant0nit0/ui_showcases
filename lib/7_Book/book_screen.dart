@@ -14,6 +14,9 @@ class BookScreen extends HookWidget {
     final pageIndex = useState(0);
     final spreadWidth = MediaQuery.of(context).size.width - 2 * kLPad;
     final controller = useMemoized(() => JournalController(), []);
+    final pages = useState<List<Widget>>(
+      List.generate(10, (index) => JournalFakePage(index: index)),
+    );
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -37,8 +40,7 @@ class BookScreen extends HookWidget {
                 pageIndex.value = index;
                 debugPrint('pageIndex: $index');
               },
-              pages:
-                  List.generate(10, (index) => JournalFakePage(index: index)),
+              pages: pages.value,
             ),
             const SizedBox(height: kLPad),
             Row(
@@ -56,6 +58,19 @@ class BookScreen extends HookWidget {
                 ),
               ],
             ),
+            const Text('Animate To'),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(
+                  pages.value.length,
+                  (index) => TextButton(
+                    onPressed: () => controller.animateTo(index),
+                    child: Text('Page $index'),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),
