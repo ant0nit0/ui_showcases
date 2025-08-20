@@ -57,7 +57,7 @@ class SwipeableJournal extends HookWidget {
       if (dir == SwipeDirection.rightToLeft) {
         return currentPageIndex.value + 2 < pages.length;
       } else {
-        return currentPageIndex.value - 2 >= -2;
+        return currentPageIndex.value - 2 >= 0;
       }
     }
 
@@ -139,8 +139,27 @@ class SwipeableJournal extends HookWidget {
       );
     }
 
+    void updateProgress(SwipeDirection direction, double progress) {
+      debugPrint('updateProgress: $progress');
+      if (animating.value) {
+        debugPrint('animating - updateProgress - abort');
+        return;
+      }
+      if (!canSwipe(direction)) {
+        debugPrint("Can't swipe - updateProgress - abort");
+        return;
+      }
+
+      swipeDirection.value = direction;
+      swipeProgress.value = progress.clamp(0.0, 1.0);
+    }
+
     useEffect(() {
-      controller?.bindControls(onNext: goNext, onPrevious: goPrevious);
+      controller?.bindControls(
+        onNext: goNext,
+        onPrevious: goPrevious,
+        onUpdateProgress: updateProgress,
+      );
       return () {
         controller?.unbindControls();
       };
@@ -173,8 +192,7 @@ class SwipeableJournal extends HookWidget {
                 swipeDirection.value = candidate;
               }
 
-              final double magnitude =
-                  (deltaX.abs() / (spreadWidth / 1.5)).clamp(
+              final double magnitude = (deltaX.abs() / spreadWidth).clamp(
                 0.0,
                 1.0,
               );
