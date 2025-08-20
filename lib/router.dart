@@ -9,6 +9,8 @@ import 'package:ui_showcases/5_Shaders/shaders_showcase_page.dart';
 import 'package:ui_showcases/6_MorphAnimations/morphable_shapes_screen.dart';
 import 'package:ui_showcases/6_MorphAnimations/onboarding/onboarding_flower_controller_example.dart';
 import 'package:ui_showcases/7_Book/book_screen.dart';
+import 'package:ui_showcases/8_Hero/hero_screen.dart';
+import 'package:ui_showcases/8_Hero/hero_second_screen.dart';
 import 'package:ui_showcases/main.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) => generateRouter());
@@ -39,6 +41,22 @@ class Routes {
   static const morphableShapes = KRoute(name: 'morphableShapes');
   static const flowerController = KRoute(name: 'flowerController');
   static const book = KRoute(name: 'book');
+  static const hero = KRoute(name: 'hero');
+  static const heroSecond = KRoute(name: 'heroSecond');
+}
+
+// Custom page transition for hero animation
+class HeroPageTransition extends CustomTransitionPage<void> {
+  HeroPageTransition({
+    required super.child,
+    required super.transitionsBuilder,
+    Duration? transitionDuration,
+  }) : super(
+          transitionDuration:
+              transitionDuration ?? const Duration(milliseconds: 800),
+          reverseTransitionDuration:
+              transitionDuration ?? const Duration(milliseconds: 800),
+        );
 }
 
 GoRouter generateRouter({
@@ -100,6 +118,27 @@ GoRouter generateRouter({
           name: Routes.book.name,
           path: Routes.book.path,
           builder: (context, state) => const BookScreen(),
+        ),
+        GoRoute(
+          name: Routes.hero.name,
+          path: Routes.hero.path,
+          builder: (context, state) => const HeroScreen(),
+        ),
+        GoRoute(
+          name: Routes.heroSecond.name,
+          path: Routes.heroSecond.path,
+          pageBuilder: (context, state) => HeroPageTransition(
+            transitionDuration:
+                const Duration(milliseconds: 1200), // Custom duration
+            child: const HeroSecondScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          ),
         ),
       ]);
 }

@@ -37,6 +37,7 @@ class HomePage extends StatelessWidget {
       '6. Morphable Shapes': Routes.morphableShapes.name,
       '7. Flower Controller': Routes.flowerController.name,
       '8. BookScreen': Routes.book.name,
+      '9. Hero': Routes.hero.name,
     };
 
     return Scaffold(
