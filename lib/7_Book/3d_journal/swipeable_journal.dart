@@ -24,6 +24,7 @@ class SwipeableJournal extends HookWidget {
   final Function(int)? onPageChanged;
   final JournalController? controller;
   final VoidCallback? onTap;
+  final int? initialIndex;
 
   const SwipeableJournal({
     super.key,
@@ -38,11 +39,34 @@ class SwipeableJournal extends HookWidget {
     this.onPageChanged,
     this.controller,
     this.onTap,
+    this.initialIndex,
   });
+
+  /// Validates the initial index and returns a valid page index.
+  ///
+  /// If [initialIndex] is null, returns 0.
+  /// If [initialIndex] is out of bounds, clamps it to the valid range.
+  /// The returned index is always even (0, 2, 4, ...) to ensure proper page display.
+  int _validateInitialIndex(int? initialIndex, int pagesLength) {
+    if (initialIndex == null) return 0;
+
+    // Ensure the index is within bounds
+    final clampedIndex = initialIndex.clamp(0, pagesLength - 1);
+
+    // Ensure the index is even (0, 2, 4, ...) for proper page display
+    // This is because the journal displays pages in pairs
+    return (clampedIndex ~/ 2) * 2;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final currentPageIndex = useState(0);
+    // Validate and calculate the initial page index
+    final validatedInitialIndex = _validateInitialIndex(
+      initialIndex,
+      pages.length,
+    );
+
+    final currentPageIndex = useState(validatedInitialIndex);
     final swipeProgress = useState(0.0); // 0..1
     final swipeDirection = useState<SwipeDirection?>(null);
     final initialDragX = useState<double?>(null);
@@ -141,7 +165,6 @@ class SwipeableJournal extends HookWidget {
     }
 
     void updateProgress(SwipeDirection direction, double progress) {
-      debugPrint('updateProgress: $progress');
       if (animating.value) {
         debugPrint('animating - updateProgress - abort');
         return;
@@ -202,21 +225,39 @@ class SwipeableJournal extends HookWidget {
                   initialDragX.value ?? details.localPosition.dx;
               final double deltaX = details.localPosition.dx - start;
 
+              bool isLastOrFirstPage = false;
+
               if (swipeDirection.value == null) {
                 final SwipeDirection candidate = deltaX > 0
                     ? SwipeDirection.leftToRight
                     : SwipeDirection.rightToLeft;
                 if (!canSwipe(candidate)) {
-                  return; // Disallow swipe in this direction
+                  isLastOrFirstPage = true;
+                  debugPrint('Swipe should not be allowed');
                 }
                 swipeDirection.value = candidate;
+              } else {
+                if (swipeDirection.value == SwipeDirection.rightToLeft) {
+                  if (currentPageIndex.value + 2 >= pages.length) {
+                    isLastOrFirstPage = true;
+                  }
+                } else {
+                  if (currentPageIndex.value - 2 < 0) {
+                    isLastOrFirstPage = true;
+                  }
+                }
               }
 
+              final max = isLastOrFirstPage ? .4 : 1.0;
               final double magnitude = (deltaX.abs() / spreadWidth).clamp(
                 0.0,
                 1.0,
               );
-              swipeProgress.value = magnitude;
+              final reducedMagnitude = magnitude * max;
+              // debugPrint(
+              //   'magnitude: $reducedMagnitude, isLastOrFirstPage: $isLastOrFirstPage',
+              // );
+              swipeProgress.value = reducedMagnitude;
             },
             onHorizontalDragEnd: (details) {
               if (animating.value) return;

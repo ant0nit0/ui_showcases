@@ -21,6 +21,7 @@ class Journal3D extends StatelessWidget {
   final JournalController? controller;
   final JournalShadowsConfiguration shadowsConfiguration;
   final VoidCallback? onTap;
+  final int? initialIndex;
 
   const Journal3D({
     super.key,
@@ -37,6 +38,7 @@ class Journal3D extends StatelessWidget {
     this.controller,
     this.shadowsConfiguration = const JournalShadowsConfiguration(),
     this.onTap,
+    this.initialIndex,
   });
   @override
   Widget build(BuildContext context) {
@@ -60,6 +62,7 @@ class Journal3D extends StatelessWidget {
           onPageChanged: onPageChanged,
           controller: controller,
           onTap: onTap,
+          initialIndex: initialIndex,
         ),
       );
     } else {
@@ -76,6 +79,7 @@ class Journal3D extends StatelessWidget {
         onPageChanged: onPageChanged,
         controller: controller,
         onTap: onTap,
+        initialIndex: initialIndex,
       );
     }
   }

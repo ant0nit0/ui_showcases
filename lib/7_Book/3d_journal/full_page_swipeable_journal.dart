@@ -24,6 +24,7 @@ class FullPageSwipeableJournal extends StatelessWidget {
   final JournalController? controller;
   final JournalShadowsConfiguration shadowsConfiguration;
   final VoidCallback? onTap;
+  final int? initialIndex;
 
   const FullPageSwipeableJournal({
     super.key,
@@ -39,6 +40,7 @@ class FullPageSwipeableJournal extends StatelessWidget {
     this.controller,
     this.shadowsConfiguration = const JournalShadowsConfiguration(),
     this.onTap,
+    this.initialIndex,
   });
 
   @override
@@ -61,6 +63,10 @@ class FullPageSwipeableJournal extends StatelessWidget {
       );
     }
 
+    // Convert the initialIndex to work with doubled pages
+    final int? doubledInitialIndex =
+        initialIndex != null ? initialIndex! * 2 : null;
+
     return SwipeableJournal(
       pages: doubled,
       perspective: perspective,
@@ -75,6 +81,7 @@ class FullPageSwipeableJournal extends StatelessWidget {
           : (int doubledIndex) => onPageChanged!(doubledIndex ~/ 2),
       controller: controller,
       onTap: onTap,
+      initialIndex: doubledInitialIndex,
     );
   }
 }

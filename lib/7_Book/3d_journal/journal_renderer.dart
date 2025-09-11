@@ -842,12 +842,7 @@ class RenderBook3D extends RenderBox
         paintRotatedRight(paintShadows: false);
       }
     } else if (_swipeDirection == SwipeDirection.leftToRight) {
-      if (leftStack.isEmpty) {
-        paintRotatedLeft(paintContent: false);
-        paintStaticRight();
-        paintRightStack();
-        paintRotatedLeft(paintShadows: false);
-      } else if (angle <= halfThreshold) {
+      if (angle <= halfThreshold) {
         paintLeftStack();
         paintRotatedLeft(paintContent: false);
         paintRightStack();
