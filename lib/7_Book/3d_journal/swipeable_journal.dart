@@ -86,17 +86,10 @@ class SwipeableJournal extends HookWidget {
                     controller.updateProgress(candidateDirection, 0.0);
                   } else {
                     candidateDirection = controller.swipeDirection;
-                    if (controller.swipeDirection ==
-                        SwipeDirection.rightToLeft) {
-                      if (controller.currentPageIndex + 2 >=
-                          controller.totalPages) {
-                        isLastOrFirstPage = true;
-                      }
-                    } else {
-                      if (controller.currentPageIndex - 2 < 0) {
-                        isLastOrFirstPage = true;
-                      }
-                    }
+                    isLastOrFirstPage = (controller.isLastPage &&
+                            candidateDirection == SwipeDirection.rightToLeft) ||
+                        (controller.isFirstPage &&
+                            candidateDirection == SwipeDirection.leftToRight);
                   }
 
                   final max = isLastOrFirstPage ? .4 : 1.0;

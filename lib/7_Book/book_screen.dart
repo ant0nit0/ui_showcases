@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:ui_showcases/7_Book/3d_journal/journal_3d.dart';
 import 'package:ui_showcases/7_Book/3d_journal/journal_controller.dart';
 import 'package:ui_showcases/7_Book/3d_journal/journal_fake_page.dart';
 import 'package:ui_showcases/7_Book/3d_journal/models/journal_shadows_configuration.dart';
+import 'package:ui_showcases/7_Book/3d_journal/swipeable_journal.dart';
 import 'package:ui_showcases/constants.dart';
 
 class BookScreen extends HookWidget {
@@ -15,15 +15,17 @@ class BookScreen extends HookWidget {
   Widget build(BuildContext context) {
     final pageIndex = useState(0);
     final spreadWidth = MediaQuery.of(context).size.width - 2 * kLPad;
+    final pages = List.generate(
+      10,
+      (index) => JournalFakePage(index: index),
+    );
 
     // Create controller with initial pages
     final controller = useMemoized(
       () => JournalController(
-        pages: List.generate(
-          10,
-          (index) => JournalFakePage(index: index),
-        ),
-        initialIndex: 0,
+        pages: pages,
+        spreadWidth: spreadWidth,
+        initialIndex: pages.length - 1,
         perspective: .0005,
         animationDuration: const Duration(milliseconds: 600),
         idleTiltDegrees: 14,
@@ -41,7 +43,7 @@ class BookScreen extends HookWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Journal3D(
+            SwipeableJournal(
               controller: controller,
               shadowsConfiguration: JournalShadowsConfiguration(
                 blurRadius: 20,
@@ -49,8 +51,6 @@ class BookScreen extends HookWidget {
                 color: Colors.black.withValues(alpha: 0.25),
                 offset: const Offset(10, 10),
               ),
-              spreadWidth: spreadWidth,
-              viewMode: JournalViewMode.fullPage,
               onTap: () {
                 debugPrint('Journal tapped');
               },

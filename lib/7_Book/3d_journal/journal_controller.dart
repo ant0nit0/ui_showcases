@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:ui_showcases/7_Book/3d_journal/swipeable_journal.dart';
 
 /// View mode for the journal.
-enum JournalViewMode {
-  /// Full-page mode: each page is a full spread, split into left/right halves
-  fullPage,
+// enum JournalViewMode {
+//   /// Full-page mode: each page is a full spread, split into left/right halves
+//   fullPage,
 
-  /// Two-page mode: pages are already split into left/right pairs
-  twoPages,
-}
+//   /// Two-page mode: pages are already split into left/right pairs
+//   twoPages,
+// }
 
 /// Controller to programmatically control a journal widget.
 ///
@@ -41,10 +41,7 @@ class JournalController extends ChangeNotifier {
   final double flipThreshold;
   final double stackedItemsTranslateFactor;
 
-  // View mode and layout
-  JournalViewMode _viewMode;
-  JournalViewMode get viewMode => _viewMode;
-  double? _spreadWidth;
+  final double? _spreadWidth;
   double? get spreadWidth => _spreadWidth;
 
   // Animation controller (provided by widget)
@@ -74,22 +71,17 @@ class JournalController extends ChangeNotifier {
     this.animationCurve = Curves.easeOutCubic,
     this.flipThreshold = 0.33,
     this.stackedItemsTranslateFactor = 10.0,
-    JournalViewMode viewMode = JournalViewMode.twoPages,
     double? spreadWidth,
     this.onPageChanged,
   })  : _pages = List.from(pages),
-        _viewMode = viewMode,
         _spreadWidth = spreadWidth {
     // Calculate initial index based on view mode
-    final renderIndex = initialIndex != null
-        ? (viewMode == JournalViewMode.fullPage
-            ? initialIndex * 2
-            : initialIndex * 2)
-        : null;
-    final renderPagesLength = viewMode == JournalViewMode.fullPage
-        ? (spreadWidth != null ? pages.length * 2 : pages.length)
-        : pages.length;
+    final renderIndex = initialIndex != null ? initialIndex * 2 : null;
+    final renderPagesLength =
+        spreadWidth != null ? pages.length * 2 : pages.length;
     _currentPageIndex = _validateInitialIndex(renderIndex, renderPagesLength);
+    debugPrint(
+        '🔗 JournalController: initialIndex: $initialIndex, renderIndex: $renderIndex, renderPagesLength: $renderPagesLength, _currentPageIndex: $_currentPageIndex');
   }
 
   /// Validates the initial index and returns a valid page index.
@@ -105,6 +97,10 @@ class JournalController extends ChangeNotifier {
 
     // Ensure the index is even (0, 2, 4, ...) for proper page display
     // This is because the journal displays pages in pairs
+
+    debugPrint('🔗 JournalController: clampedIndex: $clampedIndex');
+    debugPrint(
+        '🔗 JournalController: (clampedIndex ~/ 2) * 2: ${(clampedIndex ~/ 2) * 2}');
     return (clampedIndex ~/ 2) * 2;
   }
 
@@ -121,35 +117,19 @@ class JournalController extends ChangeNotifier {
     _animationController = null;
   }
 
-  /// Sets the view mode for the journal.
-  void setViewMode(JournalViewMode mode, {double? spreadWidth}) {
-    if (_viewMode != mode || _spreadWidth != spreadWidth) {
-      _viewMode = mode;
-      _spreadWidth = spreadWidth;
-      _renderPagesCache = null; // Invalidate cache
-      notifyListeners();
-    }
-  }
-
-  /// Gets the pages formatted for rendering (doubled in full-page mode).
+  /// Gets the pages formatted for rendering (doubled)
   List<Widget> get renderPages {
-    if (_viewMode == JournalViewMode.twoPages) {
-      return _pages;
-    }
-
-    // Full-page mode: double the pages
     if (_renderPagesCache != null &&
         _renderPagesCache!.length == _pages.length * 2) {
       return _renderPagesCache!;
     }
 
     if (_spreadWidth == null) {
-      debugPrint(
-          'Warning: spreadWidth is null in full-page mode, using pages as-is');
+      debugPrint('Warning: spreadWidth is null, using pages as-is');
       return _pages;
     }
 
-    _renderPagesCache = _createDoubledPages(_pages, _spreadWidth!);
+    _renderPagesCache = _createDoubledPages(_pages, _spreadWidth);
     return _renderPagesCache!;
   }
 
@@ -187,6 +167,7 @@ class JournalController extends ChangeNotifier {
     required bool commit,
     required SwipeDirection direction,
     required double from,
+    Duration? duration,
   }) async {
     if (_animationController == null) {
       debugPrint(
@@ -200,12 +181,7 @@ class JournalController extends ChangeNotifier {
     _animationController!.stop();
     _animationController!.value = from.clamp(0.0, 1.0);
 
-    final double remaining = (commit
-            ? 1.0 - _animationController!.value
-            : _animationController!.value)
-        .clamp(0.0, 1.0);
-    final int millis =
-        (animationDuration.inMilliseconds * remaining).clamp(80, 450).toInt();
+    final int millis = (duration ?? animationDuration).inMilliseconds;
 
     if (commit) {
       await _animationController!
@@ -231,9 +207,7 @@ class JournalController extends ChangeNotifier {
         _animationController!.value = 0.0;
         notifyListeners();
         // Call callback with original page index
-        final originalIndex = _viewMode == JournalViewMode.fullPage
-            ? _currentPageIndex ~/ 2
-            : _currentPageIndex ~/ 2;
+        final originalIndex = _currentPageIndex ~/ 2;
         await onPageChanged?.call(originalIndex);
       });
     } else {
@@ -250,9 +224,7 @@ class JournalController extends ChangeNotifier {
         _animationController!.value = 0.0;
         notifyListeners();
         // Call callback with original page index
-        final originalIndex = _viewMode == JournalViewMode.fullPage
-            ? _currentPageIndex ~/ 2
-            : _currentPageIndex ~/ 2;
+        final originalIndex = _currentPageIndex ~/ 2;
         await onPageChanged?.call(originalIndex);
       });
     }
@@ -261,7 +233,7 @@ class JournalController extends ChangeNotifier {
   /// Tries to flip to the next spread.
   ///
   /// Returns true if the page was flipped, false otherwise.
-  Future<bool> nextPage() async {
+  Future<bool> nextPage({Duration? duration}) async {
     debugPrint('🔥 nextPage');
     if (_isAnimating) {
       debugPrint('🔥 nextPage - is already animating - aborting \n');
@@ -276,6 +248,7 @@ class JournalController extends ChangeNotifier {
       commit: true,
       direction: SwipeDirection.rightToLeft,
       from: 0.0,
+      duration: duration,
     );
     return true;
   }
@@ -283,7 +256,7 @@ class JournalController extends ChangeNotifier {
   /// Tries to flip to the previous spread.
   ///
   /// Returns true if the page was flipped, false otherwise.
-  Future<bool> previousPage() async {
+  Future<bool> previousPage({Duration? duration}) async {
     if (_isAnimating) return false;
     if (!canSwipe(SwipeDirection.leftToRight)) return false;
     _swipeDirection = SwipeDirection.leftToRight;
@@ -291,6 +264,7 @@ class JournalController extends ChangeNotifier {
       commit: true,
       direction: SwipeDirection.leftToRight,
       from: 0.0,
+      duration: duration,
     );
     return true;
   }
@@ -304,10 +278,15 @@ class JournalController extends ChangeNotifier {
       debugPrint('animating - updateProgress - abort');
       return;
     }
-    if (!canSwipe(direction)) {
-      debugPrint("Can't swipe - updateProgress - abort");
-      return;
-    }
+
+    // We allow to swipe even if we are on the first or last page,
+    // as in SwipeableJournal, we already calculate this in order to avoid committing the animation if can't swipe.
+    // But we need to allow the swipe in order to be able to make the first and last pages move a little bit (but not completely)
+
+    // if (!canSwipe(direction)) {
+    //   debugPrint("Can't swipe - updateProgress - abort");
+    //   return;
+    // }
 
     _swipeDirection = direction;
     _swipeProgress = progress.clamp(0.0, 1.0);
@@ -316,27 +295,44 @@ class JournalController extends ChangeNotifier {
 
   /// Animates to the given page index.
   ///
-  /// In two-page mode, [index] refers to the page index.
-  /// In full-page mode, [index] refers to the spread index (which becomes index * 2 in render pages).
-  ///
   /// Returns true if the animation has completed, false otherwise.
   Future<bool> animateTo(int index) async {
     if (_isAnimating) return false;
     if (index < 0 || index >= _pages.length) return false;
 
     // Convert to render page index
-    final renderIndex =
-        _viewMode == JournalViewMode.fullPage ? index * 2 : index * 2;
+    final renderIndex = index * 2;
     final renderPagesLength = renderPages.length;
 
     if (renderIndex >= renderPagesLength) return false;
 
     final forward = renderIndex > _currentPageIndex;
+    final steps = (forward
+            ? renderIndex - _currentPageIndex
+            : _currentPageIndex - renderIndex) /
+        2;
+    const initialDuration = Duration(milliseconds: 500);
+    const maxTotalDuration = Duration(milliseconds: 2500);
+
+    // Use a factor (square root) to reduce duration more gradually
+    // This makes the duration decrease less dramatically as steps increase
+    final factor = 1.0 / (1.0 + (steps - 1) * 0.2);
+    final stepDurationMs = (initialDuration.inMilliseconds * factor).round();
+
+    // Ensure total duration doesn't exceed maxTotalDuration
+    final totalDurationMs = stepDurationMs * steps;
+    final adjustedStepDurationMs =
+        totalDurationMs > maxTotalDuration.inMilliseconds
+            ? (maxTotalDuration.inMilliseconds / steps).round()
+            : stepDurationMs;
+
+    final stepDuration =
+        Duration(milliseconds: adjustedStepDurationMs.clamp(100, 500));
     do {
       if (forward) {
-        await nextPage();
+        await nextPage(duration: stepDuration);
       } else {
-        await previousPage();
+        await previousPage(duration: stepDuration);
       }
     } while (_currentPageIndex != renderIndex);
 
@@ -354,8 +350,7 @@ class JournalController extends ChangeNotifier {
     if (index < 0 || index >= _pages.length) return false;
 
     // Convert to render page index
-    final renderIndex =
-        _viewMode == JournalViewMode.fullPage ? index * 2 : index * 2;
+    final renderIndex = index * 2;
     final renderPagesLength = renderPages.length;
 
     if (renderIndex >= renderPagesLength) return false;
@@ -367,9 +362,7 @@ class JournalController extends ChangeNotifier {
     _swipeDirection = null;
     notifyListeners();
     // Call callback with original page index
-    final originalIndex = _viewMode == JournalViewMode.fullPage
-        ? _currentPageIndex ~/ 2
-        : _currentPageIndex ~/ 2;
+    final originalIndex = _currentPageIndex ~/ 2;
     onPageChanged?.call(originalIndex);
     return true;
   }
@@ -381,9 +374,7 @@ class JournalController extends ChangeNotifier {
   /// If [animate] is true (default), automatically animates to the newly added page.
   Future<void> addPage(Widget page, {bool animate = true}) async {
     // Get current page index in original pages space
-    final currentOriginalIndex = _viewMode == JournalViewMode.fullPage
-        ? _currentPageIndex ~/ 2
-        : _currentPageIndex ~/ 2;
+    final currentOriginalIndex = _currentPageIndex ~/ 2;
 
     // Insert the page right after the current one
     final insertIndex = currentOriginalIndex + 1;
@@ -391,9 +382,7 @@ class JournalController extends ChangeNotifier {
     _renderPagesCache = null; // Invalidate cache
 
     // Adjust current page index if needed (in render pages space)
-    final renderIndex = _viewMode == JournalViewMode.fullPage
-        ? insertIndex * 2
-        : insertIndex * 2;
+    final renderIndex = insertIndex * 2;
     final wasBeforeCurrent = renderIndex <= _currentPageIndex;
     if (wasBeforeCurrent) {
       _currentPageIndex += 2; // Add 2 because we're in render pages space
@@ -417,8 +406,7 @@ class JournalController extends ChangeNotifier {
     _pages.insert(index, page);
     _renderPagesCache = null; // Invalidate cache
     // Adjust current page index if needed (in render pages space)
-    final renderIndex =
-        _viewMode == JournalViewMode.fullPage ? index * 2 : index * 2;
+    final renderIndex = index * 2;
     final wasBeforeCurrent = renderIndex <= _currentPageIndex;
     if (wasBeforeCurrent) {
       _currentPageIndex += 2; // Add 2 because we're in render pages space
@@ -446,13 +434,10 @@ class JournalController extends ChangeNotifier {
     }
 
     // Get current page index in original pages space
-    final currentOriginalIndex = _viewMode == JournalViewMode.fullPage
-        ? _currentPageIndex ~/ 2
-        : _currentPageIndex ~/ 2;
+    final currentOriginalIndex = _currentPageIndex ~/ 2;
 
     // Check if we're removing the current page
-    final renderIndex =
-        _viewMode == JournalViewMode.fullPage ? index * 2 : index * 2;
+    final renderIndex = index * 2;
     final wasCurrentPage = renderIndex == _currentPageIndex;
     final wasBeforeCurrent = renderIndex < _currentPageIndex;
 
@@ -486,8 +471,7 @@ class JournalController extends ChangeNotifier {
       if (animatedToIndex > index) {
         // The page we're on shifted down by 1
         final newIndex = animatedToIndex - 1;
-        final newRenderIndex =
-            _viewMode == JournalViewMode.fullPage ? newIndex * 2 : newIndex * 2;
+        final newRenderIndex = newIndex * 2;
         _currentPageIndex =
             _validateInitialIndex(newRenderIndex, renderPagesLength);
       } else {
@@ -528,9 +512,7 @@ class JournalController extends ChangeNotifier {
     }
 
     // Get the current page index in original pages space
-    final currentOriginalIndex = _viewMode == JournalViewMode.fullPage
-        ? _currentPageIndex ~/ 2
-        : _currentPageIndex ~/ 2;
+    final currentOriginalIndex = _currentPageIndex ~/ 2;
 
     if (currentOriginalIndex < 0 || currentOriginalIndex >= _pages.length) {
       debugPrint('Current page index is out of bounds');
@@ -586,6 +568,9 @@ class JournalController extends ChangeNotifier {
     _renderPagesCache = null;
     super.dispose();
   }
+
+  bool get isLastPage => _currentPageIndex + 2 >= renderPages.length;
+  bool get isFirstPage => _currentPageIndex - 1 < 0;
 }
 
 // Internal helper class for spread halves
